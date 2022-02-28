@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-
 import 'addTodo.dart';
+import 'todo.dart';
 
 void main() {
   runApp(MyApp());
@@ -44,7 +44,6 @@ class MyApp extends StatelessWidget {
 
 class DatabaseApp extends StatefulWidget {
   final Future<Database> db;
-
   DatabaseApp(this.db);
 
   @override
@@ -62,10 +61,19 @@ class _DatabaseApp extends State<DatabaseApp> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final todo = await Navigator.of(context).pushNamed('/add');
+          if (todo != null) {
+            _insertTodo(todo as Todo);
+          }
         },
         child: Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  void _insertTodo(Todo todo) async {
+    final Database database = await widget.db;
+    await database.insert('todos', todo.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 }
