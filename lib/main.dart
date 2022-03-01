@@ -3,9 +3,10 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'addTodo.dart';
 import 'todo.dart';
+import 'clearList.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -14,7 +15,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future<Database> database = initDatabase();
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -24,7 +24,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => DatabaseApp(database),
-        '/add': (context) => AddTodoApp(database)
+        '/add': (context) => AddTodoApp(database),
+        '/clear': (context) => ClearListApp(database),
       },
     );
   }
@@ -35,8 +36,8 @@ class MyApp extends StatelessWidget {
       join(await getDatabasesPath(), 'todo_database.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE todos(id INTEGER PRIMARY KEY AUTOINCREMENT,"
-          "title TEXT, content TEXT, active INTEGER",
+          "CREATE TABLE todos(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+          "title TEXT, content TEXT, active INTEGER)",
         );
       },
       version: 1,
@@ -67,6 +68,20 @@ class _DatabaseApp extends State<DatabaseApp> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Database Example'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () async {
+              await Navigator.of(context).pushNamed('/clear');
+              setState(() {
+                todoList = getTodos();
+              });
+            },
+            child: Text(
+              '완료한 일',
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
       ),
       body: Container(
         child: Center(
@@ -137,20 +152,26 @@ class _DatabaseApp extends State<DatabaseApp> {
                             _updateTodo(result);
                           },
                           onLongPress: () async {
-                            Todo result = await showDialog(context: context, builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('${todo.id}: ${todo.title}'),
-                                content: Text('${todo.content}를 삭제하시겠습니까?'),
-                                actions: <Widget>[
-                                  TextButton(onPressed: () {
-                                    Navigator.of(context).pop(todo);
-                                  }, child: Text('예')),
-                                  TextButton(onPressed: () {
-                                    Navigator.of(context).pop();
-                                  }, child: Text('아니오')),
-                                ],
-                              );
-                            });
+                            Todo result = await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('${todo.id}: ${todo.title}'),
+                                    content: Text('${todo.content}를 삭제하시겠습니까?'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(todo);
+                                          },
+                                          child: Text('예')),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('아니오')),
+                                    ],
+                                  );
+                                });
                             _deleteTodo(result);
                           },
                         );
@@ -161,7 +182,6 @@ class _DatabaseApp extends State<DatabaseApp> {
                     return const Text('No Data');
                   }
               }
-              return CircularProgressIndicator();
             },
             future: todoList,
           ),

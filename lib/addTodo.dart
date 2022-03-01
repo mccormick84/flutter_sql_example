@@ -6,7 +6,7 @@ import 'todo.dart';
 class AddTodoApp extends StatefulWidget {
   final Future<Database> db;
 
-  AddTodoApp(this.db);
+  const AddTodoApp(this.db, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AddTodoApp();
