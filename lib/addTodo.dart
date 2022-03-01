@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'todo.dart';
 import 'package:sqflite/sqlite_api.dart';
+
+import 'todo.dart';
 
 class AddTodoApp extends StatefulWidget {
   final Future<Database> db;
+
   AddTodoApp(this.db);
 
   @override
@@ -25,24 +27,24 @@ class _AddTodoApp extends State<AddTodoApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('todo 추가'),
+        title: const Text('todo 추가'),
       ),
       body: Container(
         child: Center(
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: TextField(
                   controller: titleController,
-                  decoration: InputDecoration(labelText: '제목'),
+                  decoration: const InputDecoration(labelText: '제목'),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: TextField(
                   controller: contentController,
-                  decoration: InputDecoration(labelText: '할 일'),
+                  decoration: const InputDecoration(labelText: '할 일'),
                 ),
               ),
               ElevatedButton(
@@ -54,8 +56,7 @@ class _AddTodoApp extends State<AddTodoApp> {
                     );
                     Navigator.of(context).pop(todo);
                   },
-                  child: Text('저장하기')
-              )
+                  child: const Text('저장하기'))
             ],
           ),
         ),
